@@ -14,9 +14,38 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true, minLength: 8, maxLength: 1024 },
 });
 
+userSchema.methods.generateAuthToken = function () {
+    return jwt.sign(
+      {
+        name: this.name,
+        email: this.email,
+      },
+      process.env.JWT_SECRET
+    );
+  };
+  
+  const validateUser = (user) => {
+    const schema = Joi.object({
+      name: Joi.string().min(5).max(50).required(),
+      email: Joi.string().min(5).max(255).required().email(),
+      password: Joi.string().min(5).max(1024).required(),
+    });
+    return schema.validate(user);
+  };
+  
+  const validateLogin = (req) => {
+    const schema = Joi.object({
+      email: Joi.string().min(5).max(255).required().email(),
+      password: Joi.string().min(5).max(1024).required(),
+    });
+    return schema.validate(req);
+  };
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = {
     User, 
-    
+    userSchema,
+    validateLogin,
+    validateUser
 }
