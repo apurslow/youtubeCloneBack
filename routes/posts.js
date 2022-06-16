@@ -55,7 +55,7 @@ module.exports = function (io) {
             let post = await Post.findByIdAndUpdate(req.params.postId, req.body, { new: true });
             if (!post) return res.status(400).send(`Could not find any comments with the ID of ${req.params.postId}`)
             io.emit("updated-post");
-            return res.send(posts);
+            return res.send(post);
         } catch (ex) {
             return res.status(500).send(`Internal Server Error: ${ex}`)
         }
